@@ -1,6 +1,7 @@
 PVR2MDL
 
 Developed by Alexey Leusin, Novosibirsk, 2018
+If you like my work and want to buy me a beer =), you can do it here: paypal.me/AlexeyLN
 
 This is fork of my PS2 HL mdltool that is intended to convert
 Dreamcast Half-Life *.MDL models with *.PVR textures to
@@ -14,6 +15,25 @@ How to use:
 		pvr2mdl extract [filename]
 
 Original models would be backuped in "***-backup.mdl" files.
+
+I found no sources that explain how twiddling works in words, so
+here is my explanation:
+- twiddling is appliable to square images only
+- image should be stored as one continous block in memory
+- to convert x and y coordinates to twiddled first you need to double
+	position of every set bit inside them.
+	Example: x = 10, y = 7 => x = 1010b, y = 111b
+	x has set bits at positions 1 and 3 so new positions are 2 and 6:
+		new_x = 1000100b = 68;
+	y has set bits at 0, 1 and 2, so new positions are: 0, 2, 4.
+		new_y = 10101b = 21;
+- end result of twiddleing is linear pixel number that is calculated by
+	applying bitwise or on new_y and double value of new_x.
+	Example: let's find linear pixel number for values from
+	previous section:
+	x_new * 2 = 68 * 2 = 136 = 10001000b;
+	Bitwise or: 10001000b | 10101b = 10011101b = 157;
+	So the end result is: OriginalImage[10][7] = TwiddledImage[157];
 
 Sources:
 Got info on general structure of PVRs here:
